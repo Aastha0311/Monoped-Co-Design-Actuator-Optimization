@@ -103,6 +103,6 @@ for motor in MOTORS:
 
 final_df = pd.DataFrame(final_rows)
 
-final_df.to_csv("optimal_gearbox_selection.csv", index=False)
+final_df.to_csv("optimal_gearbox_selection2.csv", index=False)
 
-print("Saved: optimal_gearbox_selection.csv")
+print("Saved: optimal_gearbox_selection2.csv")
