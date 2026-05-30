@@ -73,7 +73,7 @@ for coeff_set in coefficient_sets:
             [0.15, 0.35],
             [0.05, 0.15],
             [0.3, 0.6],  # IK height
-            [0, 10],  # ori_l
+            [0.2, 1.2],  # ori_l
             [-np.pi / 2, np.pi / 2],  # ori_theta
             [1, 6],
             [1, 6],
@@ -468,7 +468,7 @@ for coeff_set in coefficient_sets:
         
             
 
-        x0 = normalize(np.array([0.25, 0.25, 0.1, 0.35, 5.0, 0.0, 3, 4, 10.0, 10.0, 550, 5, 30]))
+        x0 = normalize(np.array([0.25, 0.25, 0.1, 0.35, 0.75, 0.0, 3, 4, 10.0, 10.0, 550, 5, 30]))
         sigma0 = 0.1
         opts = cma.CMAOptions()
         opts.set({

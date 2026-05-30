@@ -221,12 +221,12 @@ class Controller:
         Jp_left = np.zeros((3, self.m.nv))
         Jp_right = np.zeros((3, self.m.nv))
 
-        # mj.mj_jacSite(self.m, self.d, Jp_left, None, self.left_tip_id)
-        # mj.mj_jacSite(self.m, self.d, Jp_right, None, self.right_tip_id)
+        mj.mj_jacSite(self.m, self.d, Jp_left, None, self.left_tip_id)
+        mj.mj_jacSite(self.m, self.d, Jp_right, None, self.right_tip_id)
         Jp = 0.5 * (Jp_left + Jp_right)
         J = self.analytical_jacobian()
         print("J:", J)
-        print("Jp:", Jp)
+        #print("Jp:", Jp)
         F = self.force_world()
         F_planar = np.array([F[0], F[2]])
         #tau_full = Jp.T @ F
@@ -235,4 +235,6 @@ class Controller:
         # tau_right = tau_full[self.hip_right_dof]
         tau_left = tau[1]
         tau_right = tau[0]
+        print("tau_left:", tau_left)
+        print("tau_right:", tau_right)
         return np.array([tau_left, tau_right])
