@@ -39,7 +39,7 @@ for coeff_set in coefficient_sets:
     for seed in seed_list:
         print(f"\n\n========== Running optimization for SEED = {seed} ==========\n")
 
-        xml_template = os.path.join(XMLS_DIR, "5bar_base.xml")
+        xml_template = os.path.join(XMLS_DIR, "00a0a312.xml")
           
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         
@@ -57,11 +57,11 @@ for coeff_set in coefficient_sets:
         output_dir = os.path.join(dynamic_root, "Case_C_Full_co_design")
         best_results_file = os.path.join(
             output_dir,
-            f"best_dist_20_{coeff_str}_{date_str}_{seed}.csv",
+            f"best_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
         )
         all_samples_file = os.path.join(
             output_dir,
-            f"all_dist_20_{coeff_str}_{date_str}_{seed}.csv",
+            f"all_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
         )
         
         # Ensure directories exist
