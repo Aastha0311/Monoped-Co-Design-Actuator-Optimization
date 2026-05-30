@@ -32,7 +32,7 @@ num_seeds = len(seed_list)
 # Main loop for coefficient sets
 for coeff_set in coefficient_sets:
     coeff1, coeff2 = coeff_set
-    coeff_str = f"{int(coeff1*10000):03d}_{int(coeff2*10000):03d}"
+    coeff_str = f"{int(coeff1*1000):03d}_{int(coeff2*100):03d}"
     
     print(f"\n\n========== Running optimization for COEFFICIENTS = {coeff1:.2f}, {coeff2:.2f} ==========\n")
     
@@ -54,7 +54,7 @@ for coeff_set in coefficient_sets:
         for subfolder in dynamic_subfolders:
             os.makedirs(os.path.join(dynamic_root, subfolder), exist_ok=True)
 
-        output_dir = os.path.join(dynamic_root, "Case_C_Full_co_design")
+        output_dir = os.path.join(dynamic_root, "baseline")
         best_results_file = os.path.join(
             output_dir,
             f"best_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
@@ -69,20 +69,15 @@ for coeff_set in coefficient_sets:
         os.makedirs(os.path.dirname(all_samples_file), exist_ok=True)
         
         original_bounds = np.array([
-            [0.15, 0.35],  # Thigh length
-            [0.15, 0.35],
-            [0.05, 0.15],
-            [0.3, 0.6],  # IK height
+            [0.3, 0.6],  # ik height
             [0.2, 6.0],  # ori_l
             [-np.pi / 2, np.pi / 2],  # ori_theta
-            [1, 6],
-            [1, 6],
-            [4, 35],
-            [4, 35],
-            [50, 1000],
+            [50, 1000],  # Controller Param 1
             [0, 10],
-            [10, 50]
+            [10, 50]  # Controller Param 3
         ])
+        import pandas as pd
+
         def motor_index_to_name(x):
             """
             Maps a numeric input to one of six motor names.
@@ -322,22 +317,31 @@ for coeff_set in coefficient_sets:
 
                 params = denormalize(params)
 
-                thigh_length = params[0]
-                calf_length = params[1]
-                torso_distance = params[2]
-                ik_height = params[3]
-                ori_l = params[4]
-                ori_theta = params[5]
+                # thigh_length = params[0]
+                # calf_length = params[1]
+                # torso_distance = params[2]
+                thigh_length = 0.297
+                calf_length = 0.302
+                torso_distance = 0.125
+                ik_height = params[0]
+                ori_l = params[1]
+                ori_theta = params[2]
                 max_reach = thigh_length + calf_length
                 min_reach = abs(thigh_length - calf_length)
                 ik_height = np.clip(ik_height, min_reach, max_reach-0.01)
-                motor_left_name = motor_index_to_name(params[6])
-                motor_right_name = motor_index_to_name(params[7])
+                # motor_left_name = motor_index_to_name(params[4])
+                # motor_right_name = motor_index_to_name(params[5])
+                motor_left_index = 2
+                motor_right_index = 2
+                motor_left_name = motor_index_to_name(motor_left_index)
+                motor_right_name = motor_index_to_name(motor_right_index)
 
-                gear_left_ratio = params[8]
-                gear_right_ratio = params[9]
+                # gear_left_ratio = params[6]
+                # gear_right_ratio = params[7]
+                gear_left_ratio = 6.0
+                gear_right_ratio = 6.0
 
-                controller_params = process_action(params[10:])
+                controller_params = process_action(params[3:])
 
                 mass_left, efficiency_left, gearbox_left = get_motor_gearbox_properties(
                     os.path.join(RESULTS_DIR, "optimal_gearbox_selection.csv"),
@@ -360,13 +364,11 @@ for coeff_set in coefficient_sets:
                 tau_right = get_continuous_torque(
                     config_path,
                     "Motor" + motor_right_name + "_framed"
-                ) * gear_right_ratio
-
-                
+                ) * gear_right_ratio 
 
                 unique_id = uuid.uuid4().hex[:8]
 
-                modified_xml = os.path.join(XMLS_DIR, "design_xmls", f"{unique_id}.xml")
+                modified_xml = os.path.join(XMLS_DIR, "Nominal_xmls", f"{unique_id}.xml")
                 os.makedirs(os.path.dirname(modified_xml), exist_ok=True)
 
                 modify_5bar_xml(
@@ -384,6 +386,10 @@ for coeff_set in coefficient_sets:
                     mass_right,
                     calf_interp_func
                 )
+
+                # -------------------------
+                # RUN SIMULATION 5 TIMES
+                # -------------------------
 
                 run_results = []
 
@@ -404,7 +410,7 @@ for coeff_set in coefficient_sets:
                         ori_theta
                     )
 
-                    if result is None :
+                    if result is None:
                         continue
 
                     best_height, best_x_vel, best_distance, best_energy, best_duration, jump_results = result
@@ -420,14 +426,19 @@ for coeff_set in coefficient_sets:
                         "duration": best_duration
                     })
 
-                if len(run_results) == 0 or best_height<0.01 :
+                if len(run_results) == 0 or best_height < 0.01:
                     return 1e6
+
+                # -------------------------
+                # MODE DISTANCE SELECTION
+                # -------------------------
 
                 rounded_distances = [round(r["distance"], 2) for r in run_results]
 
                 distance_counts = Counter(rounded_distances)
                 mode_distance = distance_counts.most_common(1)[0][0]
 
+                # pick first run matching the mode
                 selected_run = None
 
                 for r in run_results:
@@ -440,7 +451,15 @@ for coeff_set in coefficient_sets:
                 best_distance = selected_run["distance"]
                 best_energy = selected_run["energy"]
 
+                # -------------------------
+                # COST
+                # -------------------------
+
                 cost = coeff1 * (-best_distance * 20) + coeff2 * (best_energy)
+
+                # -------------------------
+                # SAVE ALL RUNS
+                # -------------------------
 
                 with open(all_samples_file, "a", newline="") as file:
 
@@ -468,12 +487,20 @@ for coeff_set in coefficient_sets:
         
             
 
-        x0 = normalize(np.array([0.25, 0.25, 0.1, 0.35, 1.0, 0.0, 3, 4, 10.0, 10.0, 550, 5, 30]))
+        # CMA-ES Optimization
+        x0 = normalize(np.array([0.35, 0.6, 0.0, 550, 5, 30]))
         sigma0 = 0.1
         opts = cma.CMAOptions()
         opts.set({
             'maxiter': 1000, 'popsize': 8, 'seed': int(seed),
-            'bounds': [np.zeros(13), np.ones(13)], 'verb_disp': 1000, 'verb_disp': 1})
+            'bounds': [np.zeros(6), np.ones(6)], 'verb_disp': 1000, 'verb_disp': 1})
+            # 'tolfun': 0,
+            # 'tolfunhist': 0,
+            # 'tolx': 0,
+            # 'tolstagnation': 1000,
+
+            
+                
 
         es = cma.CMAEvolutionStrategy(x0, sigma0, opts)
 
@@ -496,28 +523,31 @@ for coeff_set in coefficient_sets:
 
                 costs = pool.map(get_cost, solutions)
 
+                #print("costs:", costs)
+
                 best_index = np.argmin(costs)
                 best_params = denormalize(solutions[best_index])
                 best_cost = costs[best_index]
 
-                thigh_length = best_params[0]
-                calf_length = best_params[1]
-                torso_distance = best_params[2]
-                ik_height = best_params[3]
+                
+                thigh_length = 0.297
+                calf_length = 0.302
+                torso_distance = 0.125
+                ik_height = best_params[0]
+                ori_l = best_params[1]
+                ori_theta = best_params[2]
 
-                ori_l = best_params[4]
-                ori_theta = best_params[5]
+               
+                motor_left_index = 2
+                motor_right_index = 2
+                motor_left_name = motor_index_to_name(motor_left_index)
+                motor_right_name = motor_index_to_name(motor_right_index)              
 
-                motor1_number = best_params[6]
-                motor2_number = best_params[7]
+    
+                gear_left_ratio = 6.0
+                gear_right_ratio = 6.0
 
-                motor_left_name = motor_index_to_name(motor1_number)
-                motor_right_name = motor_index_to_name(motor2_number)
-
-                gear_left_ratio = best_params[8]
-                gear_right_ratio = best_params[9]
-
-                controller_params = process_action(best_params[10:])
+                controller_params = process_action(best_params[3:])
 
                 mass_left, efficiency_left, gearbox_left = get_motor_gearbox_properties(
                     os.path.join(RESULTS_DIR, "optimal_gearbox_selection.csv"),
@@ -551,8 +581,9 @@ for coeff_set in coefficient_sets:
 
         print(f"Joint optimization completed for seed {seed}.")
         print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        #store time taken in the end of best results file
         with open(best_results_file, "a", newline="") as file:
             writer = csv.writer(file)
-            end_time = datetime.now()
+            end_time = datetime.now()           
             writer.writerow(["Time taken (seconds)"])
             writer.writerow([end_time.strftime("%Y-%m-%d %H:%M:%S")])

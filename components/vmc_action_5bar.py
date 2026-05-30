@@ -225,7 +225,7 @@ class Controller:
         mj.mj_jacSite(self.m, self.d, Jp_right, None, self.right_tip_id)
         Jp = 0.5 * (Jp_left + Jp_right)
         J = self.analytical_jacobian()
-        print("J:", J)
+        #print("J:", J)
         #print("Jp:", Jp)
         F = self.force_world()
         F_planar = np.array([F[0], F[2]])
