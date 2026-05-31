@@ -22,7 +22,7 @@ COMPONENTS_DIR = os.path.join(REPO_DIR, "components")
 ACT_OPT_DIR = os.path.join(REPO_DIR, "actuator_optimization")
 # Define the coefficient sets
 coefficient_sets = []
-for first_coeff in np.arange(0.5611, 0.65, 0.05):  # 0.4 to 0.8 with step 0.05
+for first_coeff in np.arange(0.56599, 0.65, 0.05):  # 0.4 to 0.8 with step 0.05
     second_coeff = 1.0 - first_coeff
     coefficient_sets.append((first_coeff, second_coeff))
 
@@ -32,7 +32,7 @@ num_seeds = len(seed_list)
 # Main loop for coefficient sets
 for coeff_set in coefficient_sets:
     coeff1, coeff2 = coeff_set
-    coeff_str = f"{int(coeff1*10000):03d}_{int(coeff2*10000):03d}"
+    coeff_str = f"{int(coeff1*100000):03d}_{int(coeff2*100000):03d}"
     
     print(f"\n\n========== Running optimization for COEFFICIENTS = {coeff1:.2f}, {coeff2:.2f} ==========\n")
     
@@ -57,11 +57,11 @@ for coeff_set in coefficient_sets:
         output_dir = os.path.join(dynamic_root, "Case_C_Full_co_design")
         best_results_file = os.path.join(
             output_dir,
-            f"best_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
+            f"best_dist_20_newb_{coeff_str}_{date_str}_{seed}.csv",
         )
         all_samples_file = os.path.join(
             output_dir,
-            f"all_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
+            f"all_dist_20_newb_{coeff_str}_{date_str}_{seed}.csv",
         )
         
         # Ensure directories exist

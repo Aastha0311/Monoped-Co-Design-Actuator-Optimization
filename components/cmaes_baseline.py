@@ -322,7 +322,7 @@ for coeff_set in coefficient_sets:
                 # torso_distance = params[2]
                 thigh_length = 0.297
                 calf_length = 0.302
-                torso_distance = 0.05
+                torso_distance = 0.1
                 ik_height = params[0]
                 ori_l = params[1]
                 ori_theta = params[2]
@@ -532,7 +532,7 @@ for coeff_set in coefficient_sets:
                 
                 thigh_length = 0.297
                 calf_length = 0.302
-                torso_distance = 0.05
+                torso_distance = 0.1
                 ik_height = best_params[0]
                 ori_l = best_params[1]
                 ori_theta = best_params[2]
