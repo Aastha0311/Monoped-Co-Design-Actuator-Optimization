@@ -22,7 +22,7 @@ COMPONENTS_DIR = os.path.join(REPO_DIR, "components")
 ACT_OPT_DIR = os.path.join(REPO_DIR, "actuator_optimization")
 # Define the coefficient sets
 coefficient_sets = []
-for first_coeff in np.arange(0.50, 0.60, 0.05):  # 0.4 to 0.8 with step 0.05
+for first_coeff in np.arange(0.80, 1.0, 0.05):  # 0.4 to 0.8 with step 0.05
     second_coeff = 1.0 - first_coeff
     coefficient_sets.append((first_coeff, second_coeff))
 
@@ -57,11 +57,11 @@ for coeff_set in coefficient_sets:
         output_dir = os.path.join(dynamic_root, "baseline")
         best_results_file = os.path.join(
             output_dir,
-            f"best_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
+            f"best_dist_20_newb_{coeff_str}_{date_str}_{seed}.csv",
         )
         all_samples_file = os.path.join(
             output_dir,
-            f"all_dist_20_newj_{coeff_str}_{date_str}_{seed}.csv",
+            f"all_dist_20_newb_{coeff_str}_{date_str}_{seed}.csv",
         )
         
         # Ensure directories exist
@@ -70,7 +70,7 @@ for coeff_set in coefficient_sets:
         
         original_bounds = np.array([
             [0.3, 0.6],  # ik height
-            [0.2, 6.0],  # ori_l
+            [0.2, 7.0],  # ori_l
             [-np.pi / 2, np.pi / 2],  # ori_theta
             [50, 1000],  # Controller Param 1
             [0, 10],
@@ -322,7 +322,7 @@ for coeff_set in coefficient_sets:
                 # torso_distance = params[2]
                 thigh_length = 0.297
                 calf_length = 0.302
-                torso_distance = 0.125
+                torso_distance = 0.05
                 ik_height = params[0]
                 ori_l = params[1]
                 ori_theta = params[2]
@@ -532,7 +532,7 @@ for coeff_set in coefficient_sets:
                 
                 thigh_length = 0.297
                 calf_length = 0.302
-                torso_distance = 0.125
+                torso_distance = 0.05
                 ik_height = best_params[0]
                 ori_l = best_params[1]
                 ori_theta = best_params[2]
