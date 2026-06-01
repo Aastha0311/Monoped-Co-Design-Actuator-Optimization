@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-06-01 05:47:35",
+  "all_file": "/home/stochlab/repo/optimal-design-legged-robots/results/CMAES_output/baseline/all_dist_20_newb_800_019_2026-05-31_20-50-21_5.0.csv",
+  "all_min_cost": -7.495866091793697,
+  "all_min_row": {
+    "Thigh": 0.297,
+    "Calf": 0.302,
+    "Hip left motor": "U10",
+    "Hip right motor": "U10",
+    "Hip left ratio": 6.0,
+    "Hip right ratio": 6.0,
+    "Gearbox left": "SSPG",
+    "Gearbox right": "SSPG",
+    "Efficiency left": 0.952,
+    "Efficiency right": 0.952,
+    "Torso distance": 0.1,
+    "ik_height": 0.3002049217058575,
+    "ori_l": 0.2200611217066836,
+    "ori_theta": 1.075783873110416,
+    "Best X velocity": 9.06337986152282,
+    "Average energy": 25.969929567852034,
+    "Max height": 0.2414710970137833,
+    "Max distance": 0.7931157503352563,
+    "Unique id": "60f37fab",
+    "Cost": -7.495866091793697,
+    "ac1": 670.0,
+    "ac2": 5.7,
+    "ac3": 10.1
+  }
+}
