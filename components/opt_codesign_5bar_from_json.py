@@ -18,18 +18,18 @@ JOINT_DATA_DIR = os.path.join(RESULTS_DIR, "opt_joint_data")
 CASE = "Nominal"  # A, B, C, or Nominal
 
 Case_A_json_path = os.path.join(OPT_PARAMS_DIR, "CaseA_ll.json")
-Case_B_json_path = os.path.join(OPT_PARAMS_DIR, "CaseB_gear_opt.json")
-Case_C_json_path = os.path.join(OPT_PARAMS_DIR, "CaseC_full_codesign_opt.json")
-Nominal_json_path = os.path.join(OPT_PARAMS_DIR, "Nominal.json")
+Case_B_json_path = os.path.join(OPT_PARAMS_DIR, "summary_CaseB.json")
+Case_C_json_path = os.path.join(OPT_PARAMS_DIR, "summary_CaseC.json")
+Nominal_json_path = os.path.join(OPT_PARAMS_DIR, "summary_nominal.json")
 
-Case_A_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_A_Jump_Timeseries.csv")
-Case_B_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_B_Jump_Timeseries.csv")
-Case_C_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_C_Jump_Timeseries.csv")
-Nominal_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Nominal_Jump_Timeseries.csv")
+Case_A_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_A_Jump_Timeseries_new.csv")
+Case_B_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_B_Jump_Timeseries_new.csv")
+Case_C_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Case_C_Jump_Timeseries_new.csv")
+Nominal_joint_data_csv_path = os.path.join(JOINT_DATA_DIR, "Nominal_Jump_Timeseries_new.csv")
 
 Case_A_xml_folder = os.path.join(XMLS_DIR, "Case_A_xmls")
 Case_B_xml_folder = os.path.join(XMLS_DIR, "Case_B_xmls")
-Case_C_xml_folder = os.path.join(XMLS_DIR, "Case_C_xmls")
+Case_C_xml_folder = os.path.join(XMLS_DIR, "design_xmls")
 Nominal_xml_folder = os.path.join(XMLS_DIR, "Nominal_xmls")
 
 CASE_CONFIG = {
@@ -373,7 +373,13 @@ with open(results_json, "r") as f:
 
 secondary = results_data.get("secondary")
 if secondary is None:
-    raise ValueError("No secondary entry found in JSON; rerun extract_results.py or relax matching.")
+    secondary = results_data.get("all_row_for_best_min")
+if secondary is None:
+    secondary = results_data.get("all_min_row")
+if secondary is None:
+    raise ValueError(
+        "No usable data row found in JSON; expected secondary, all_row_for_best_min, or all_min_row."
+    )
 
 unique_id = get_field(secondary, "Unique id", "unique_id", "Unique Id")
 xml_path = os.path.join(xml_folder, f"{unique_id}.xml")
