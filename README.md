@@ -1,23 +1,25 @@
-# optimal-design-legged-robots
+# Five-bar-monoped-optimization
 
 ## Pre-requisites
 The Following libraries are required: \
-`numpy, qpsolvers, scipy, matplotlib, osqp`
+`numpy, scipy, matplotlib, cma, pandas`
 
 
 ## Quick Start Guide
 
-Step 1:
+## 1. Installation: 
+Install the following packages:
 ```
-pip install numpy qpsolvers scipy matplotlib
+pip install numpy scipy matplotlib cma pandas
 ```
+## 2. Stage 1: Actuator Optimization: 
+Run the python script in the actuator optimization directory to obtain optimal gearbox parameters for all motors:
+```
+python best_gearbox.py
+```
+## 3. Stage 2: Co-Design Optimization: 
+Run the python script in the components directory:
 
-Step 2:
 ```
-pip install qpsolvers[osqp]
-```
-
-Step 3:
-```
-python main.py
+python cmaes.py
 ```
