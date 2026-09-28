@@ -47,7 +47,15 @@ python best_gearbox.py
 Output is saved to `optimal_gearbox_selection2.csv`.
 
 ## 3. Stage 2: Co-Design Optimization: 
-Run the python script in the components directory:
+Run the corresponding python script in the `components` directory. Each script runs the same CMA-ES trajectory/controller optimization loop, but over a different subset of design variables:
+
+| Script | Case | Optimizes | Fixed |
+| --- | --- | --- | --- |
+| `cmaes_baseline.py` | Nominal | Jump trajectory + controller gains | Leg link lengths, motor, gear ratio |
+| `cmaes_ll.py` | Case A | Leg link lengths + trajectory + controller gains | Motor, gear ratio |
+| `cmaes_gear.py` | Case B | Motor + gear ratio + trajectory + controller gains | Leg link lengths |
+| `cmaes.py` | Case C | Leg link lengths + motor + gear ratio + trajectory + controller gains (full co-design) | — |
+| `cmaes_ctrlfixed.py` | ablation | Leg link lengths + motor + gear ratio | Controller gains |
 
 ```
 python cmaes.py
