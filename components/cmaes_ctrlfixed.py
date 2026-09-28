@@ -22,7 +22,7 @@ COMPONENTS_DIR = os.path.join(REPO_DIR, "components")
 ACT_OPT_DIR = os.path.join(REPO_DIR, "actuator_optimization")
 # Define the coefficient sets
 coefficient_sets = []
-for first_coeff in np.arange(0.56599, 0.65, 0.05):  # 0.4 to 0.8 with step 0.05
+for first_coeff in np.arange(0.6, 0.65, 0.05):  # 0.4 to 0.8 with step 0.05
     second_coeff = 1.0 - first_coeff
     coefficient_sets.append((first_coeff, second_coeff))
 
@@ -50,11 +50,12 @@ for coeff_set in coefficient_sets:
             "Case_B_act",
             "Case_C_Full_co_design",
             "baseline",
+            "only_design",
         ]
         for subfolder in dynamic_subfolders:
             os.makedirs(os.path.join(dynamic_root, subfolder), exist_ok=True)
 
-        output_dir = os.path.join(dynamic_root, "Case_C_Full_co_design")
+        output_dir = os.path.join(dynamic_root, "only_design")
         best_results_file = os.path.join(
             output_dir,
             f"best_dist_20_newl_{coeff_str}_{date_str}_{seed}.csv",
@@ -78,10 +79,7 @@ for coeff_set in coefficient_sets:
             [1, 6],
             [1, 6],
             [4, 25],
-            [4, 25],
-            [50, 1000],
-            [0, 10],
-            [10, 50]
+            [4, 25]
         ])
         def motor_index_to_name(x):
             """
@@ -337,7 +335,8 @@ for coeff_set in coefficient_sets:
                 gear_left_ratio = params[8]
                 gear_right_ratio = params[9]
 
-                controller_params = process_action(params[10:])
+                #controller_params = process_action(params[10:])
+                controller_params = [550, 5, 30]
 
                 mass_left, efficiency_left, gearbox_left = get_motor_gearbox_properties(
                     os.path.join(RESULTS_DIR, "optimal_gearbox_selection.csv"),
@@ -366,7 +365,7 @@ for coeff_set in coefficient_sets:
 
                 unique_id = uuid.uuid4().hex[:8]
 
-                modified_xml = os.path.join(XMLS_DIR, "design_xmls", f"{unique_id}.xml")
+                modified_xml = os.path.join(XMLS_DIR, "only_design_xmls", f"{unique_id}.xml")
                 os.makedirs(os.path.dirname(modified_xml), exist_ok=True)
 
                 modify_5bar_xml(
@@ -468,12 +467,12 @@ for coeff_set in coefficient_sets:
         
             
 
-        x0 = normalize(np.array([0.25, 0.25, 0.1, 0.35, 0.4, 0.0, 3, 4, 10.0, 10.0, 550, 5, 30]))
+        x0 = normalize(np.array([0.25, 0.25, 0.1, 0.35, 0.4, 0.0, 3, 4, 10.0, 10.0]))
         sigma0 = 0.1
         opts = cma.CMAOptions()
         opts.set({
             'maxiter': 1000, 'popsize': 8, 'seed': int(seed),
-            'bounds': [np.zeros(13), np.ones(13)], 'verb_disp': 1000, 'verb_disp': 1})
+            'bounds': [np.zeros(10), np.ones(10)], 'verb_disp': 1000, 'verb_disp': 1})
 
         es = cma.CMAEvolutionStrategy(x0, sigma0, opts)
 
@@ -517,7 +516,8 @@ for coeff_set in coefficient_sets:
                 gear_left_ratio = best_params[8]
                 gear_right_ratio = best_params[9]
 
-                controller_params = process_action(best_params[10:])
+                #controller_params = process_action(best_params[10:])
+                controller_params = [550, 5, 30]
 
                 mass_left, efficiency_left, gearbox_left = get_motor_gearbox_properties(
                     os.path.join(RESULTS_DIR, "optimal_gearbox_selection.csv"),

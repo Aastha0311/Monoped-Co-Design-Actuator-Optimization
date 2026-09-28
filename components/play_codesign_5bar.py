@@ -13,31 +13,32 @@ REPO_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
 RESULTS_DIR = os.path.join(REPO_DIR, "results")
 XMLS_DIR = os.path.join(REPO_DIR, "xmls")
 OPT_PARAMS_DIR = os.path.join(RESULTS_DIR, "Opt_design_control_parameters")
+JOINT_DATA_DIR = os.path.join(RESULTS_DIR, "opt_joint_data")
 MONOPED_OPT_DIR = os.path.abspath(
     os.path.join(REPO_DIR, "..", "Aastha_Coopt_Monoped", "Monoped-optimization")
 )
 if os.path.isdir(MONOPED_OPT_DIR):
     sys.path.append(MONOPED_OPT_DIR)
 
-CASE = "Nominal"  # Choose: A, B, C, or Nominal
+CASE = "C"  # Choose: A, B, C, or Nominal
 RECORD_VIDEO = True
 VIDEO_DIR = os.path.join(RESULTS_DIR, "videos")
 
 CASE_CHOICES = {
     "A": {
-        "results_json": os.path.join(OPT_PARAMS_DIR, "CaseA_ll.json"),
+        "results_json": os.path.join(OPT_PARAMS_DIR, "summary_CaseA.json"),
         "xml_dir": os.path.join(XMLS_DIR, "Case_A_xmls"),
     },
     "B": {
-        "results_json": os.path.join(OPT_PARAMS_DIR, "CaseB_gear_opt.json"),
+        "results_json": os.path.join(OPT_PARAMS_DIR, "summary_CaseB.json"),
         "xml_dir": os.path.join(XMLS_DIR, "Case_B_xmls"),
     },
     "C": {
-        "results_json": os.path.join(OPT_PARAMS_DIR, "CaseC_full_codesign_opt.json"),
-        "xml_dir": os.path.join(XMLS_DIR, "Case_C_xmls"),
+        "results_json": os.path.join(OPT_PARAMS_DIR, "summary_CaseC.json"),
+        "xml_dir": os.path.join(XMLS_DIR, "design_xmls"),
     },
     "NOMINAL": {
-        "results_json": os.path.join(OPT_PARAMS_DIR, "Nominal.json"),
+        "results_json": os.path.join(OPT_PARAMS_DIR, "summary_nominal.json"),
         "xml_dir": os.path.join(XMLS_DIR, "Nominal_xmls"),
     },
 }
@@ -50,7 +51,7 @@ def run(xml_path, action, ik_value, hip1_peak_torque, hip2_peak_torque, thigh_le
     m.opt.tolerance = 1e-6
 
     record_video = RECORD_VIDEO
-    video_filename = os.path.join(VIDEO_DIR, f"{case_label}.mp4")
+    video_filename = os.path.join(VIDEO_DIR, f"{case_label}_new.mp4")
     video_fps = 100
     if record_video:
         renderer = mj.Renderer(m, width=1920, height=1080)
@@ -369,7 +370,13 @@ with open(results_json, "r") as f:
 
 secondary = results_data.get("secondary")
 if secondary is None:
-    raise ValueError("No secondary entry found in JSON; rerun extract_results.py or relax matching.")
+    secondary = results_data.get("all_row_for_best_min")
+if secondary is None:
+    secondary = results_data.get("all_min_row")
+if secondary is None:
+    raise ValueError(
+        "No usable data row found in JSON; expected secondary, all_row_for_best_min, or all_min_row."
+    )
 
 unique_id = get_field(secondary, "Unique id", "unique_id", "Unique Id")
 xml_path = os.path.join(CASE_CHOICES[case_key]["xml_dir"], f"{unique_id}.xml")
@@ -388,7 +395,7 @@ motor_right_name = get_field(secondary, "Hip right motor", "motor_right_name", "
 gear_left_ratio = float(get_field(secondary, "Hip left ratio", "gear_left_ratio", "gear_ratio_left"))
 gear_right_ratio = float(get_field(secondary, "Hip right ratio", "gear_right_ratio", "gear_ratio_right"))
 
-config_path = os.path.join(REPO_DIR, "Actuator_Optimization", "config_files", "config.json")
+config_path = os.path.join(REPO_DIR, "actuator_optimization", "config_files", "config.json")
 motor_left_key = f"Motor{motor_left_name}_framed"
 motor_right_key = f"Motor{motor_right_name}_framed"
 hip1_peak_torque = get_motor_continuous_torque(config_path, motor_left_key) * gear_left_ratio

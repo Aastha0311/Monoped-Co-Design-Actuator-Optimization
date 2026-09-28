@@ -15,9 +15,9 @@ OPT_PARAMS_DIR = os.path.join(RESULTS_DIR, "Opt_design_control_parameters")
 JOINT_DATA_DIR = os.path.join(RESULTS_DIR, "opt_joint_data")
 
 # Configurable inputs
-CASE = "Nominal"  # A, B, C, or Nominal
+CASE = "C"  # A, B, C, or Nominal
 
-Case_A_json_path = os.path.join(OPT_PARAMS_DIR, "CaseA_ll.json")
+Case_A_json_path = os.path.join(OPT_PARAMS_DIR, "summary_CaseA.json")
 Case_B_json_path = os.path.join(OPT_PARAMS_DIR, "summary_CaseB.json")
 Case_C_json_path = os.path.join(OPT_PARAMS_DIR, "summary_CaseC.json")
 Nominal_json_path = os.path.join(OPT_PARAMS_DIR, "summary_nominal.json")

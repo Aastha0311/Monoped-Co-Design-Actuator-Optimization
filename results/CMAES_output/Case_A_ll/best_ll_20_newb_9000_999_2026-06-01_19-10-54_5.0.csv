@@ -1,0 +1,4 @@
+thigh_length,calf_length,motor_left_name,motor_right_name,gear_left_ratio,gear_right_ratio,gearbox_left,gearbox_right,torso_distance,ik_height,ori_l,ori_theta,best_index,best_cost,ac1,ac2,ac3
+0.25882454973770086,0.24338256019866594,U10,U10,6.0,6.0,SSPG,SSPG,0.12430798195726574,0.3424371100647925,0.40548061386897527,0.4971649151252433,0,1000000.0,463.6,4.4,30.8
+Time taken (seconds)
+2026-06-01 19:10:54

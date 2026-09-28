@@ -22,7 +22,7 @@ COMPONENTS_DIR = os.path.join(REPO_DIR, "components")
 ACT_OPT_DIR = os.path.join(REPO_DIR, "actuator_optimization")
 # Define the coefficient sets
 coefficient_sets = []
-for first_coeff in np.arange(0.80, 1.0, 0.05):  # 0.4 to 0.8 with step 0.05
+for first_coeff in np.arange(0.57, 1.0, 0.05):  # 0.4 to 0.8 with step 0.05
     second_coeff = 1.0 - first_coeff
     coefficient_sets.append((first_coeff, second_coeff))
 
@@ -488,7 +488,7 @@ for coeff_set in coefficient_sets:
             
 
         # CMA-ES Optimization
-        x0 = normalize(np.array([0.35, 0.6, 0.0, 550, 5, 30]))
+        x0 = normalize(np.array([0.35, 0.4, 0.0, 550, 5, 30]))
         sigma0 = 0.1
         opts = cma.CMAOptions()
         opts.set({

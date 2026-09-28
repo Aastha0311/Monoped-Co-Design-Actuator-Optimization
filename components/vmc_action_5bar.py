@@ -51,6 +51,8 @@ class Controller:
         return self.d.xipos[self.base_body_id]
 
     def distance(self):
+        #print("ee_pos:", self.ee_pos())
+        #print("base_pos:", self.base_pos())
         return np.linalg.norm(self.ee_pos() - self.base_pos())
 
     def total_linear_force(self):
@@ -66,6 +68,7 @@ class Controller:
         leg_dir = leg_vec / np.linalg.norm(leg_vec)
 
         ldot = leg_dir @ vel
+        #print(self.K * (self.ori_l - l), self.C * ldot)
 
         return self.K * (self.ori_l - l) - self.C * ldot
 
@@ -79,15 +82,17 @@ class Controller:
         l = np.linalg.norm(leg_vec)
 
         leg_dir = leg_vec / l
-
+        #print("leg_dir:", leg_dir)
         Fl = self.total_linear_force()
         F_lin = Fl * leg_dir
         alpha = np.arctan2(leg_dir[0], -leg_dir[2])
         tau_t = self.T_gain * (self.ori_theta - alpha)
-
+        print("f_lin:", F_lin)
         leg_perp = np.array([-leg_dir[2], 0.0, leg_dir[0]])
         F_tor = (tau_t / l) * leg_perp
         F = -F_lin - F_tor
+        #print("Fl:", Fl)
+        #print("F_tor:", F_tor)
         total_mass = float(np.sum(self.m.body_mass))
         F_grav = 0 * total_mass * self.m.opt.gravity
         return F + F_grav
@@ -229,12 +234,14 @@ class Controller:
         #print("Jp:", Jp)
         F = self.force_world()
         F_planar = np.array([F[0], F[2]])
+        #print("Fx:", F[0])
+        #print("Fz:", F[2])
         #tau_full = Jp.T @ F
         tau = J.T @ F_planar
         # tau_left = tau_full[self.hip_left_dof]
         # tau_right = tau_full[self.hip_right_dof]
         tau_left = tau[1]
         tau_right = tau[0]
-        print("tau_left:", tau_left)
-        print("tau_right:", tau_right)
+        #print("tau_left:", tau_left)
+        #print("tau_right:", tau_right)
         return np.array([tau_left, tau_right])
